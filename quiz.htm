@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h1 style="font-size: 5em;" id="message">Click the start button to start the timer.</h1>
+    <h1 style="font-size: 5em;" id="time"></h1>
+
+    <button style="font-size: 5em;" id="start" onclick="start()">Start</button>
+    <div id="answerblock" style="display:none;">
+    <input style="font-size: 5em;" id="answer" type="text" name="answer" placeholder="Enter your answer">
+    <button style="font-size: 5em;" id="check" onclick="check()">Check your answer</button>
+    </div>
+
+    <script>
+
+        var endTime;
+        var timer;
+        var wrongsound = new Audio('wrong.mp3');
+        var cheersound = new Audio('cheering.mp3');
+        var bombsound = new Audio('bomb.mp3');
+
+        function remaining() {
+            var now = new Date().getTime();
+            var dist = endTime - now;
+            return (dist>0)?dist:0;
+        }
+
+        function minsecs(dist) {
+            var minutes = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((dist % (1000 * 60)) / 1000);
+            var hths = Math.floor((dist % 1000)/10);
+            return minutes + "m " + seconds + "." + hths + "s ";
+        }
+ 
+        function start() {
+            document.getElementById("start").style.display = "none";
+            document.getElementById("answerblock").style.display ="block";
+            document.getElementById("message").innerHTML = "HURRY, NOT MUCH TIME TO GO!"
+            endTime = new Date();
+            endTime.setMinutes(endTime.getMinutes() + 1);
+
+            timer = setInterval(function () {
+                var distance = remaining();
+                document.getElementById("time").innerHTML = minsecs(distance);
+                if (distance <= 0) {
+                    clearInterval(timer);
+                    document.getElementById("message").innerHTML = "TIME UP!";
+                    document.getElementById("check").disabled = true;
+                    bombsound.play();
+                }
+            }, 50);
+
+        }
+
+        function check() {
+            wrongsound.pause();
+            if (document.getElementById("answer").value === "12345") {
+                clearInterval(timer);
+                document.getElementById("message").innerHTML = "THAT'S RIGHT - you did it!"
+                cheersound.play();
+            } else {
+                document.getElementById("message").innerHTML = "WRONG! Go and check your answers"
+                document.getElementById("answer").value = "";
+                wrongsound.play();
+            }
+        }
+    </script>
+
+</body>
+
+</html>
